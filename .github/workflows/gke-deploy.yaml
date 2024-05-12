@@ -9,7 +9,7 @@ env:
   GKE_CLUSTER: cluster-1 # TODO: update to cluster name
   GKE_ZONE: us-central1-c # TODO: update to cluster zone
   DEPLOYMENT_NAME: gke-test # TODO: update to deployment name
-  REPOSITORY: inventium # Artifact Registry 
+  REPOSITORY: 205098647215.dkr.ecr.us-east-1.amazonaws.com/inventium/msg-inventory
   IMAGE: msg-inventory # Docker image name
   VERSION: 0.0.1 # Docker image version
 jobs:
@@ -26,24 +26,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Configure Workload Identity Federation and generate an access token.
-      - id: "auth"
-        name: "Authenticate to Google Cloud"
-        uses: "google-github-actions/auth@v0"
-        with:
-          token_format: "access_token"
-          workload_identity_provider: "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider"
-          service_account: "my-service-account@my-project.iam.gserviceaccount.com"
+      # - name: Login to AWS ECR
+      #   run: |-
+      #     aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 205098647215.dkr.ecr.us-east-1.amazonaws.com
 
-      # Build the Docker image
       - name: Build
         run: |-
-          docker build --tag "$REPOSITORY/$IMAGE:$VERSION" .
-      # Push the Docker image to Google Artifact Registry
+          docker build --tag "$REPOSITORY:$VERSION" . --build-arg SERVICE_NAME=$IMAGE --build-arg FOLDER=.
+
       - name: Publish
         run: |-
-          docker push "$REPOSITORY/$IMAGE:$VERSION"
-      # Set up kustomize
+          docker push "$REPOSITORY:$VERSION"
+
       - name: Set up Kustomize
         run: |-
           curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
