@@ -1,12 +1,13 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"msg-inventory/config"
 
-type Server struct {
-	router *gin.Engine
-}
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	router := gin.Default()
-	router.Run(":8080")
+	router.Run(":13740")
+	config.LoadConfig("app.env")
 }

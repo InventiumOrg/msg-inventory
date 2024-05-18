@@ -7,11 +7,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Server struct {
+type Route struct {
 	router *gin.Engine
 }
 
-func routes() {
+func (r *Route) routes() {
 	router := gin.Default()
 	router.Use(middlewares.Authenticate())
 	router.GET("/inventory", handlers.GetInventory)
